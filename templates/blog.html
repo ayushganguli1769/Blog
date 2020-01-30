@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block body %}
+<br>
+<h1><span class="badge badge-success">Current Session: {{ request.user.username }}</span></h1>
+<div class="d-flex justify-content-center"><input type="text" style="width: 25%;" class ="p-2" placeholder="search users" oninput="allUser(this)"><br>
+</div>
+<div id="userResult" class="d-flex justify-content-center">
+    <br>
+</div>
+ <div class="container" >
+    <div class="row">
+        {% for article in user_article %}
+            <div class="col-md-6 col-lg-4 col-xl-4 col-sm-12">
+                <div class="card" >
+            
+            {% if article.image %}                
+          <img class="card-img-top img-fluid" src="{{article.image.url}}" alt="Card image">
+          {% endif %}
+          <div class="card-body">
+            <h2 class="card-title">{{article.title}}</h2>
+            <h4 class="card-title">By {{article.user.username}}</h4>
+            <h4 class="card-title">Created At {{article.time}}</h4>
+            <h4 class="card-title">View: 
+            {% if article.private %}
+                PRIVATE 
+                {% else %}
+                PUBLIC
+            {% endif %}
+                </h4>
+                <p class="card-text" >{{article.description}}</p>
+        <div id="button" style="display: inline;">
+            <div id="private">
+                {% if article.private %}
+                    <button class="btn btn-success" id="{{article.id}}" onclick="return privacy(this);">MAKE PUBLIC </button>
+                {% else %}
+                    <button class="btn btn-danger" id="{{article.id}}" onclick="return privacy(this);">MAKE PRIVATE </button>
+                {% endif %}
+            </div>
+            <form action="/article/{{article.id}}">
+                <button class="btn btn-primary m-2">View Full</button>
+            </form>
+    </div>
+          </div>
+        </div>
+        <br>
+    </div>
+    {% endfor %}
+ </div>
+<script>
+function allUser(obj)
+{
+    url = '/user?username='+ obj.value;
+    userResult = document.getElementById("userResult");
+    var req = new XMLHttpRequest();
+  req.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     var data = eval(req.responseText);
+     html = ""
+     html += "<ul>"
+     for(var i = 0;i < data.length; i++ )
+     {
+         html += "<li><a href = '/user_detail/"+ data[i].id + "'>"+ data[i].username + "</a></li>" 
+     }
+     html += "</ul>";
+     if ( req.responseText != "blank" )
+     {
+     userResult.innerHTML = html;
+     }
+    }
+    };
+    req.open("GET", url, true);
+    req.send();
+}
+
+function privacy(obj)
+{
+    id = parseInt(obj.id);
+    url = "/private/" + id
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        if (req.responseText == "was_private")
+        {
+            obj.className = "btn btn-danger";
+            obj.innerHTML = "MAKE PRIVATE";
+        }
+        else
+        {
+            obj.className = "btn btn-success";
+            obj.innerHTML = "MAKE PUBLIC";
+        }
+
+     //document.getElementById("demo").innerHTML = this.responseText;
+    }
+    };
+    req.open("GET", url, true);
+    req.send();
+
+    //mydiv.innerHTML = "";
+    return false;
+}
+</script>
+<style>
+    .card-text
+    {
+        overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+    </style>
+{% endblock body %}

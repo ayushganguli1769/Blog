@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1><span class="badge badge-success">User Page: {{ourUser.username}} </span></h1>
+<div class="container" >
+    <div class="row">
+        {% for article in user_article %}
+            <div class="col-md-6 col-lg-4 col-xl-4 col-sm-12">
+                <div class="card" >
+            
+            {% if article.image %}                
+          <img class="card-img-top img-fluid" src="{{article.image.url}}" alt="Card image">
+          {% endif %}
+          <div class="card-body">
+            <h2 class="card-title">{{article.title}}</h2>
+            <h4 class="card-title">By {{article.user.username}}</h4>
+            <h4 class="card-title">Created At {{article.time}}</h4>
+            <h4 class="card-title">View: 
+            {% if article.private %}
+                PRIVATE 
+                {% else %}
+                PUBLIC
+            {% endif %}
+                </h4>
+                <p class="card-text" >{{article.description}}</p>
+          </div>
+          <form action="/article/{{article.id}}">
+            <button class="btn btn-primary m-2">View Full</button>
+        </form>
+        </div>
+        <br>
+    </div>
+    {% endfor %}
+ </div>
+<script>
+</script>
+<style>
+.card-text
+{
+    overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+</style>
+{% endblock body %}

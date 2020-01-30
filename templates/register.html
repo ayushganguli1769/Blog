@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}
+  Register
+{% endblock title %}
+{% block head %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'register.css' %}">
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+
+<!-- web font -->
+<link href="//fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+<!-- //web font -->
+{% endblock head %}
+{% block body %}
+  
+	<!-- main -->
+	<div class="main-w3layouts wrapper">
+		<h1>Register</h1>
+		<div class="main-agileinfo">
+			<div class="agileits-top">
+			<span class="badge badge-danger mx-auto">
+				<h3 id="errorMessage"></h3>
+				</span>
+				{% if error_message %}
+				<span class="badge badge-danger mx-auto"><h3 class="text-center">
+					{{ error_message }}
+					</h3></span>
+				{% endif %}
+				<br>
+				<br>
+				<form onsubmit="return validate()" action="/register/" method="post" id="myform">
+					{% csrf_token %}
+					<input class="text" type="text" id="username" name="username" placeholder="username" oninput="checkUsername(this);" required=""><br>
+					<input class="text" type="password" name="password1" placeholder="password" required="" id="password1" oninput="password1check(this)">
+					<input class="text w3lpass" type="password" name="password2" placeholder="Confirm Password" required="" oninput="password2check(this)" id="password2">
+					<div class="alert alert-success">
+						<strong style="color: black;">CAPCHA VALIDATION !!!</strong>
+						<h1><span class="badge badge-danger" id="capcha"></span><span class="badge badge-danger" id="capcha1"> = </span></h1> <input type="text" id="capchaResult" style="background-color: blue;color: white;"> 
+
+					  </div>
+					<input type="submit" value="SIGNUP" name="register" >
+				</form>
+				<p>Already have an account? <a href="{% url 'blog:login' %}"> Login Now!</a></p>
+			</div>
+		</div>
+
+		<ul class="colorlib-bubbles">
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</div>
+	<!-- //main -->
+<script>
+window.onload = initAll();
+function password1check(obj)
+{
+	//alert("hii")
+	errorMessage = document.getElementById("errorMessage");
+	if (obj.value.length <= 7 )
+	{
+		errorMessage.textContent = "Password too short"
+	}
+	else
+	{
+		errorMessage.textContent = ""
+	}
+
+}
+function password2check(obj)
+{
+	password1 = document.getElementById("password1").value;
+	errorMessage = document.getElementById("errorMessage");
+	if (obj.value != password1)
+	{
+		errorMessage.textContent = "Password do not match."
+	}
+	else
+	{
+		errorMessage.textContent = ""
+	}
+
+}
+function initAll()
+{
+	expression = document.getElementById("capcha");
+	a= Math.floor(Math.random() * 100);
+	b = Math.floor(Math.random() * 100);
+	expression.innerHTML = a + "+" + b;
+
+}
+function checkUsername(obj)
+{
+			errorMessage = document.getElementById("errorMessage");
+			var req = new XMLHttpRequest();
+			username = obj.value;
+			url = "/check_username?username=" + username;
+		req.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			if (req.responseText == "exists")
+			{
+				errorMessage.textContent = "Username already exists";
+			}
+			else if ( obj.value.length < 8 )
+			{
+				errorMessage.textContent = "Username too short";
+			}
+
+			}
+		};
+		req.open("GET", url, true);
+		req.send();
+}
+function validate()
+{
+	username = document.getElementById("username").value;
+	password1 = document.getElementById("password1").value;
+	password2 = document.getElementById("password2").value;
+	capcha = document.getElementById("capcha").innerHTML;
+	capchaResult = document.getElementById("capchaResult").value;
+	expected_result = eval(capcha);
+	errorMessage = document.getElementById("errorMessage");
+	if( parseInt(capchaResult) != eval(capcha))
+	{
+		alert("capcha verification fail");
+		errorMessage.textContent = " Capcha Verification Failed ";
+		return false;
+	}
+	else if(username.length < 8)
+	{
+		alert("Username Too short");
+		errorMessage.textContent = "Username Too short ";
+		return false;
+	}
+	else if( password1 != password2)
+	{
+		alert("Passwords do not match")
+		errorMessage.textContent = "Passwords do not match";
+		return false;
+	}
+	else if(password1.length <= 7)
+	{
+		alert("Password too short");
+		errorMessage.textContent = "Passwords too short";
+		return false;
+	}
+
+
+	return true;
+}
+</script>
+{% endblock body %}

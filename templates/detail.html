@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<br>
+<br>
+<div class="container border border-dark rounded">
+    <div class="text-center">
+    <h1 ><span class="badge badge-pill badge-danger">{{article.title}}</span></h1>
+    </div>
+    <div class= "col-md-5">
+        <div class="alert alert-info">
+            <strong>
+                <ul>
+                    <li>BY: {{article.user.username}}</li>
+                    <li>Created at: {{article.time}}</li>
+                    <li>View Status: 
+                    {% if article.private %}
+                        Private
+                        {% else %}
+                        Public
+                    {% endif %}
+                        </li>
+                </ul>
+            </strong>
+          </div>
+    </div >
+    <br>
+    
+    {% if article.image %}
+    <img src="{{article.image.url}}" class="img img-fluid"><br>
+    {% endif %}
+    {{article.description}}
+</div>
+<br>
+<br>
+  
+{% endblock body %}
